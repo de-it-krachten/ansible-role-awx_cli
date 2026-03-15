@@ -1,0 +1,23 @@
+---
+
+# Generic
+generic:
+  role: ansible-role-awx_cli
+  role_short: awx_cli
+  role_description: |
+    Installs the AWX CLI aka awxkit
+  collections: []
+
+# Supported platforms
+platforms:
+  ubuntu2004:
+    supported: true
+    ci: true
+
+# Molecule
+molecule:
+  requirements:
+    roles_extra: []
+  prepare:
+    vars:
+      activate_epel: true
