@@ -1,0 +1,21 @@
+---
+
+# Awxkit / AWX cli version
+awx_cli_version: 24.6.1
+
+# List of pypi packages to install
+awx_cli_packages:
+  - "awxkit=={{ awx_cli_version }}"
+  - "pyyaml"
+
+# Virtual environment base packages
+awx_cli_venv_base_packages:
+  - pip
+  - wheel
+  - "setuptools<82"
+
+# venv root
+awx_cli_venv_path: /usr/local/venv/awxkit
+
+# Python version to use
+awx_cli_venv_python: /usr/bin/python3.11
