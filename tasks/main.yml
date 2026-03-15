@@ -1,0 +1,49 @@
+---
+
+- name: Install python3
+  ansible.builtin.include_role:
+    name: deitkrachten.python
+  vars:
+    python311: true
+
+- name: Check if the requested python is present
+  ansible.builtin.stat:
+    path: "{{ awx_cli_venv_python }}"
+  register: __awx_cli_venv_python
+
+- name: If not, fall back onto '/usrbin/python3'
+  ansible.builtin.set_fact:
+    awx_cli_venv_python: /usr/bin/python3
+  when: not __awx_cli_venv_python.stat.exists
+
+- name: Show virtual environment settings
+  ansible.builtin.debug:
+    msg:
+      virtualenv: "{{ awx_cli_venv_path }}"
+      virtualenv_command: "{{ awx_cli_venv_python }} -m venv"
+      packages: "{{ awx_cli_venv_base_packages }}"
+
+- name: Create virtual environment
+  ansible.builtin.pip:
+    name: "{{ awx_cli_venv_base_packages }}"
+    state: present
+    virtualenv: "{{ awx_cli_venv_path }}"
+    virtualenv_command: "{{ awx_cli_venv_python }} -m venv"
+    extra_args: "--upgrade"
+  become: yes
+
+- name: Install awxkit via pip
+  ansible.builtin.pip:
+    name: "{{ awx_cli_packages }}"
+    state: present
+    executable: "{{ awx_cli_venv_path }}/bin/pip3"
+  become: yes
+
+- name: Create symbolic link in /usr/local/bin
+  ansible.builtin.file:
+    src: "{{ awx_cli_venv_path }}/bin/awx"
+    dest: /usr/local/bin/awx
+    owner: root
+    group: root
+    state: link
+    force: true
